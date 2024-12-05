@@ -13,7 +13,7 @@ insertionsort xs = _insertionsort xs []
         | otherwise = a:insert as x
 
 -- Calculates the similarity between two lists 
-similarity :: [Int] -> [Int] -> Int
+similarity :: (Num a, Ord a) => [a] -> [a] -> a
 similarity left right = _similarity sleft sright first 0 0 
     where 
     sleft = insertionsort left
@@ -21,7 +21,7 @@ similarity left right = _similarity sleft sright first 0 0
     first = (sleft!!0) - 1 -- 1 less than the first sorted element will not exist in the list. 
     
     -- Calculates the similarity by assuming a sorted list, and keeping track of the previous number and similarity score, so you only have to count each number once..
-    _similarity :: [Int] -> [Int] -> Int -> Int -> Int -> Int
+    _similarity :: (Num a, Ord a) => [a] -> [a] -> a -> a -> a -> a
     _similarity [] _ _ _ acc    = acc
     _similarity (l:ls) rs prev_num prev_sim acc -- This line needs to get priority: if we have the same number multiple times in left, even though right is empty we should still count them.
         | l == prev_num         = _similarity ls        rs      prev_num    prev_sim    (acc + prev_sim) 
