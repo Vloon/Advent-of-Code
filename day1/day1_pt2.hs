@@ -31,8 +31,8 @@ similarity left right = _similarity sleft sright first 0 0
         | l > r                 = _similarity (l:ls)    rs      prev_num    prev_sim    acc
         | otherwise             = _similarity ls        (r:rs)  prev_num    prev_sim    acc
         where 
-            num = length (filter (== l)  (r:rs))
-            sim = l * num
+        count = length (filter (== l)  (r:rs))
+        sim = l * count
 
 main = do
     -- Read input file
