@@ -29,10 +29,31 @@ difference_at_most xs max_diff = pair_predicate_check xs (\x y -> diff x y <= ma
 report_is_valid :: (Num a, Ord a) => [a] -> Bool
 report_is_valid xs = ((strictly_decreasing xs) || (strictly_increasing xs)) && (difference_at_most xs 3)
 
+-- Remove an element from list at index i
+remove_elem :: (Eq a) => [a] -> Int -> [a]
+remove_elem xs i 
+    | i >= length xs    = error "Index i >= length of list xs: cannot remove element"
+    | otherwise         = fst pair ++ (drop 1 (snd pair))
+    where 
+        pair = splitAt i xs
+
+-- Check if report is valid with a single bad level removed.
+valid_with_removal :: (Num a, Ord a) => [a] -> Bool
+valid_with_removal xs = _valid_with_removal xs 0 
+    where 
+    _valid_with_removal :: (Num a, Ord a) => [a] -> Int -> Bool
+    _valid_with_removal xs i 
+        | i >= length xs                        = False
+        | report_is_valid (remove_elem xs i)    = True
+        | otherwise                             = _valid_with_removal xs (i+1) 
+
 main = do
     -- Read input file
     content <- readFile "input.txt"
     let all_str_reports = lines content -- Split by lines
     let reports = [[read str_level :: Int | str_level <- str_report] | str_report <- [words str_report_ln  | str_report_ln <- all_str_reports]] -- Yes yes baby. It's a nested list comprehension.
-    let num_valid_reports = sum [fromEnum (report_is_valid report) | report <- reports] -- Counts the number of reports which are valid.
-    print(num_valid_reports)
+    let valid_reports = [report | report <- reports, report_is_valid report] 
+    let invalid_reports = [report | report <- reports, not (elem report valid_reports)]
+    let valid_removed_reports = [report | report <- invalid_reports, valid_with_removal report] -- Check which reports are valid with 1 removal
+    let total_valid_reports = length valid_reports + length valid_removed_reports
+    print(total_valid_reports)
